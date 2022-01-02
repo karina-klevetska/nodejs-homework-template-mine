@@ -5,6 +5,7 @@ const router = express.Router()
 
 router.get('/', async (req, res, next) => {
   const contacts = await model.listContacts()
+  console.log(contacts)
   res.status(200).json(contacts)
 })
 
