@@ -1,6 +1,6 @@
 import Contact from '../model/contact.js'
 
-const listContacts = async ({
+export const listContacts = async ({
   sortBy,
   sortByDesc,
   filter,
@@ -26,34 +26,26 @@ const listContacts = async ({
   return { total, contacts: result }
 }
 
-const getContactById = async (contactId) => {
+export const getContactById = async (contactId) => {
   const result = await Contact.findById(contactId)
   return result
 }
 
-const removeContact = async (contactId) => {
+export const removeContact = async (contactId) => {
   const result = await Contact.findByIdAndRemove(contactId)
   return result
 }
 
-const addContact = async (body) => {
+export const addContact = async (body) => {
   const result = await Contact.create(body)
   return result
 }
 
-const updateContact = async (contactId, body) => {
+export const updateContact = async (contactId, body) => {
   const result = await Contact.findByIdAndUpdate(
     contactId,
     { ...body },
     { new: true }
   )
   return result
-}
-
-export default {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
 }

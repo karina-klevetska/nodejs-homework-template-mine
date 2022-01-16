@@ -4,6 +4,10 @@ const { Schema, model } = mongoose
 
 const contactSchema = new Schema(
   {
+    owner: {
+      type: SchemaTypes.ObjectId,
+      ref: 'user',
+    },
     name: {
       type: String,
       required: [true, 'Set name for contact'],
