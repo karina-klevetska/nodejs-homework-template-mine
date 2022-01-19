@@ -14,3 +14,8 @@ export const createNewUser = async (body) => {
   const user = new User(body)
   return await user.save()
 }
+
+export const updateToken = async (id, token) => {
+  const result = await User.updateOne({ _id: id }, { token })
+  return result
+}

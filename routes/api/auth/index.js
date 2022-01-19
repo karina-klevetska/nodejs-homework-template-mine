@@ -5,11 +5,13 @@ import {
   logoutController,
 } from '../../../controllers/auth/index.js'
 
+import guard from '../../../middlewares/guard.js'
+
 const router = express.Router()
 
-router.post('/signup', limiter(15 * 60 * 1000, 2), signupController)
+router.post('/signup', signupController)
 router.post('/login', loginController)
-router.post('/logout', logoutController)
+router.post('/logout', guard, logoutController)
 // router.get('/current', guard, controllers.current)
 
 export default router

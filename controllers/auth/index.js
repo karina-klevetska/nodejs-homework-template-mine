@@ -1,7 +1,7 @@
 import { httpCode } from '../../lib/constants.js'
 import AuthService from '../../service/auth/index.js'
 
-const { OK, CREATED, BAD_REQUEST, NOT_FOUND, CONFLICT } = httpCode
+const { OK, CREATED, CONFLICT, UNAUTHORIZED, NO_CONTENT } = httpCode
 const authService = new AuthService()
 
 export const signupController = async (req, res, next) => {
@@ -18,11 +18,22 @@ export const signupController = async (req, res, next) => {
 }
 
 export const loginController = async (req, res, next) => {
-  const contacts = await repositoryContacts.listContacts(req.query)
-  res.status(OK).json({ status: 'success', code: OK, data: { ...contacts } })
+  const { email, password } = req.body
+  const user = await authService.getUser(email, password)
+
+  if (!user) {
+    res.status(UNAUTHORIZED).json({
+      status: 'error',
+      code: UNAUTHORIZED,
+      message: 'Email or password is wrong',
+    })
+  }
+  const token = authService.getToken(user)
+  await authService.setToken(user.id, token)
+  res.status(OK).json({ status: 'success', code: OK, data: { token } })
 }
 
 export const logoutController = async (req, res, next) => {
-  const contacts = await repositoryContacts.listContacts(req.query)
-  res.status(OK).json({ status: 'success', code: OK, data: { ...contacts } })
+  await authService.setToken(req.user.id, null)
+  res.status(NO_CONTENT).json({ status: 'success', code: NO_CONTENT, data: {} })
 }
