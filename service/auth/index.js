@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import {
+  getUserById,
   getUserByEmail,
   createNewUser,
   updateToken,
@@ -37,6 +38,10 @@ class AuthService {
 
   async setToken(id, token) {
     return await updateToken(id, token)
+  }
+
+  async getCurrent(id) {
+    return await getUserById(id)
   }
 }
 

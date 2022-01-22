@@ -3,15 +3,16 @@ import {
   signupController,
   loginController,
   logoutController,
+  getCurrentUserController,
 } from '../../../controllers/auth/index.js'
-
+import { validateAuth } from './validation.js'
 import guard from '../../../middlewares/guard.js'
 
 const router = express.Router()
 
-router.post('/signup', signupController)
-router.post('/login', loginController)
-router.post('/logout', guard, logoutController)
-// router.get('/current', guard, controllers.current)
+router.post('/signup', validateAuth, signupController)
+router.post('/login', validateAuth, loginController)
+router.post('/logout', [guard, validateAuth], logoutController)
+router.get('/current', guard, getCurrentUserController)
 
 export default router

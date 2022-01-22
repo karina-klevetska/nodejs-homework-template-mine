@@ -12,9 +12,10 @@ export const signupController = async (req, res, next) => {
     res
       .status(CONFLICT)
       .json({ status: 'error', code: CONFLICT, message: 'Email in use' })
+  } else {
+    const data = await authService.createUser(req.body)
+    res.status(CREATED).json({ status: 'success', code: CREATED, data })
   }
-  const data = await authService.createUser(req.body)
-  res.status(CREATED).json({ status: 'success', code: CREATED, data })
 }
 
 export const loginController = async (req, res, next) => {
@@ -27,13 +28,31 @@ export const loginController = async (req, res, next) => {
       code: UNAUTHORIZED,
       message: 'Email or password is wrong',
     })
+  } else {
+    const token = authService.getToken(user)
+    await authService.setToken(user.id, token)
+    res.status(OK).json({ status: 'success', code: OK, data: { token } })
   }
-  const token = authService.getToken(user)
-  await authService.setToken(user.id, token)
-  res.status(OK).json({ status: 'success', code: OK, data: { token } })
 }
 
 export const logoutController = async (req, res, next) => {
   await authService.setToken(req.user.id, null)
   res.status(NO_CONTENT).json({ status: 'success', code: NO_CONTENT, data: {} })
+}
+
+export const getCurrentUserController = async (req, res, next) => {
+  if (req.user.id) {
+    const user = await authService.getCurrent(req.user.id)
+    res.status(OK).json({
+      status: 'success',
+      code: OK,
+      data: { user },
+    })
+  } else {
+    res.status(UNAUTHORIZED).json({
+      status: 'error',
+      code: UNAUTHORIZED,
+      message: 'Not authorized',
+    })
+  }
 }
