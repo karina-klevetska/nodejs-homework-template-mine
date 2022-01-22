@@ -16,22 +16,23 @@ import {
   updateContactController,
 } from '../../../controllers/contacts/index.js'
 
+import guard from '../../../middlewares/guard.js'
+
 const router = express.Router()
 
-router.get('/', validateQuery, getContactsController)
+router.get('/', [guard, validateQuery], getContactsController)
 
-router.get('/:id', validateId, getContactByIdController)
+router.get('/:id', [guard, validateId], getContactByIdController)
 
-router.post('/', validateCreate, addContactController)
+router.post('/', [guard, validateCreate], addContactController)
 
-router.delete('/:id', validateId, removeContactController)
+router.delete('/:id', [guard, validateId], removeContactController)
 
-router.put('/:id', validateId, validateUpdate, updateContactController)
+router.put('/:id', [guard, validateId, validateUpdate], updateContactController)
 
 router.patch(
   '/:id/favorite',
-  validateId,
-  validateUpdateFavorite,
+  [guard, validateId, validateUpdateFavorite],
   updateContactController
 )
 

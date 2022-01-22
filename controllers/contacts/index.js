@@ -1,16 +1,24 @@
-import repositoryContacts from '../../repository/contacts.js'
+import {
+  listContacts,
+  getContactById,
+  addContact,
+  removeContact,
+  updateContact,
+} from '../../repository/contacts.js'
 import { httpCode } from '../../lib/constants.js'
 
 const { OK, CREATED, BAD_REQUEST, NOT_FOUND } = httpCode
 
 export const getContactsController = async (req, res, next) => {
-  const contacts = await repositoryContacts.listContacts(req.query)
+  const { id: userId } = req.user
+  const contacts = await listContacts(userId, req.query)
   res.status(OK).json({ status: 'success', code: OK, data: { ...contacts } })
 }
 
 export const getContactByIdController = async (req, res, next) => {
+  const { id: userId } = req.user
   const { id } = req.params
-  const contact = await repositoryContacts.getContactById(id)
+  const contact = await getContactById(userId, id)
   if (contact) {
     return res
       .status(OK)
@@ -22,15 +30,17 @@ export const getContactByIdController = async (req, res, next) => {
 }
 
 export const addContactController = async (req, res, next) => {
-  const newContact = await repositoryContacts.addContact(req.body)
+  const { id: userId } = req.user
+  const newContact = await addContact(userId, req.body)
   res
     .status(CREATED)
     .json({ status: 'success', code: CREATED, data: { newContact } })
 }
 
 export const removeContactController = async (req, res, next) => {
+  const { id: userId } = req.user
   const { id } = req.params
-  const deleteContact = await repositoryContacts.removeContact(id)
+  const deleteContact = await removeContact(userId, id)
   if (deleteContact) {
     console.log(deleteContact)
     return res.status(OK).json({
@@ -46,15 +56,16 @@ export const removeContactController = async (req, res, next) => {
 }
 
 export const updateContactController = async (req, res, next) => {
+  const { id: userId } = req.user
   const { id } = req.params
-  const updateContact = await repositoryContacts.updateContact(id, req.body)
+  const changeContact = await updateContact(userId, id, req.body)
   if (req.body === null) {
     return res
       .status(BAD_REQUEST)
       .json({ status: 'error', code: BAD_REQUEST, message: 'missing fields' })
   }
   if (updateContact) {
-    return res.status(OK).json(updateContact)
+    return res.status(OK).json(changeContact)
   }
   res
     .status(NOT_FOUND)
