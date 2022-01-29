@@ -19,3 +19,8 @@ export const updateToken = async (id, token) => {
   const result = await User.updateOne({ _id: id }, { token })
   return result
 }
+
+export const updateAvatar = async (id, avatar) => {
+  const result = await User.updateOne({ _id: id }, { avatar })
+  return result
+}
