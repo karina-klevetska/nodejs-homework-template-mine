@@ -9,6 +9,7 @@ import {
   updateVerify,
 } from '../../repository/users.js'
 import { EmailService, SendgridSender } from '../../service/email/index.js'
+import { CustomError } from '../../lib/customError.js'
 
 const { OK, BAD_REQUEST, NOT_FOUND, UNPROCESSABLE_ENTITY } = httpCode
 
@@ -32,11 +33,7 @@ export const verifyUser = async (req, res, next) => {
       data: { message: 'Verification successful' },
     })
   }
-  res.status(NOT_FOUND).json({
-    status: 'error',
-    code: NOT_FOUND,
-    data: { message: 'User not found' },
-  })
+  throw new CustomError(NOT_FOUND, 'User not found')
 }
 
 export const repeatEmailForVerifyUser = async (req, res, next) => {
@@ -61,15 +58,7 @@ export const repeatEmailForVerifyUser = async (req, res, next) => {
         data: { message: 'Verification email sent' },
       })
     }
-    res.status(UNPROCESSABLE_ENTITY).json({
-      status: 'error',
-      code: UNPROCESSABLE_ENTITY,
-      data: { message: 'Unprocessable Entity' },
-    })
+    throw new CustomError(UNPROCESSABLE_ENTITY, 'Unprocessable entity')
   }
-  res.status(NOT_FOUND).json({
-    status: 'error',
-    code: NOT_FOUND,
-    data: { message: 'User not found' },
-  })
+  throw new CustomError(NOT_FOUND, 'User not found')
 }

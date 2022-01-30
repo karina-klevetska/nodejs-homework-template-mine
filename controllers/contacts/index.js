@@ -6,6 +6,7 @@ import {
   updateContact,
 } from '../../repository/contacts.js'
 import { httpCode } from '../../lib/constants.js'
+import { CustomError } from '../../lib/customError.js'
 
 const { OK, CREATED, BAD_REQUEST, NOT_FOUND } = httpCode
 
@@ -24,9 +25,7 @@ export const getContactByIdController = async (req, res, next) => {
       .status(OK)
       .json({ status: 'success', code: OK, data: { contact } })
   }
-  res
-    .status(NOT_FOUND)
-    .json({ status: 'error', code: NOT_FOUND, message: 'Not found' })
+  throw new CustomError(NOT_FOUND, 'Not found')
 }
 
 export const addContactController = async (req, res, next) => {
@@ -50,9 +49,7 @@ export const removeContactController = async (req, res, next) => {
       message: 'contact deleted',
     })
   }
-  res
-    .status(NOT_FOUND)
-    .json({ status: 'error', code: NOT_FOUND, message: 'Not found' })
+  throw new CustomError(NOT_FOUND, 'Not found')
 }
 
 export const updateContactController = async (req, res, next) => {
@@ -60,14 +57,10 @@ export const updateContactController = async (req, res, next) => {
   const { id } = req.params
   const changeContact = await updateContact(userId, id, req.body)
   if (req.body === null) {
-    return res
-      .status(BAD_REQUEST)
-      .json({ status: 'error', code: BAD_REQUEST, message: 'missing fields' })
+    throw new CustomError(BAD_REQUEST, 'Missing fields')
   }
   if (updateContact) {
     return res.status(OK).json(changeContact)
   }
-  res
-    .status(NOT_FOUND)
-    .json({ status: 'error', code: NOT_FOUND, message: 'Not found' })
+  throw new CustomError(NOT_FOUND, 'Not found')
 }

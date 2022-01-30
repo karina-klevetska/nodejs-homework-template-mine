@@ -6,16 +6,16 @@ class EmailService {
 
     switch (env) {
       case 'development':
-        this.link = 'http://localhost:3000/'
+        this.link = 'http://localhost:3000'
         break
       case 'test':
-        this.link = 'http://localhost:5000/'
+        this.link = 'http://localhost:5000'
         break
       case 'production':
-        this.link = 'http://heroku/'
+        this.link = 'https://api-contacts-save.herokuapp.com'
         break
       default:
-        this.link = 'http://localhost:3000/'
+        this.link = 'http://localhost:3000'
     }
   }
 
@@ -37,7 +37,7 @@ class EmailService {
           button: {
             color: '#22BC66',
             text: 'Confirm your account',
-            link: `${this.link}api/users/verify/${verificationToken}`,
+            link: `${this.link}/api/users/verify/${verificationToken}`,
           },
         },
         outro:

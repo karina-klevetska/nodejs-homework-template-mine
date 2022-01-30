@@ -6,11 +6,17 @@ import {
   verifyUser,
   repeatEmailForVerifyUser,
 } from '../../../controllers/users/index.js'
+import wrapperError from '../../../middlewares/errorHandler.js'
 
 const router = express.Router()
 
-router.patch('/avatars', guard, upload.single('avatar'), uploadAvatar)
-router.get('/verify/:verificationToken', verifyUser)
-router.post('/verify', repeatEmailForVerifyUser)
+router.patch(
+  '/avatars',
+  guard,
+  upload.single('avatar'),
+  wrapperError(uploadAvatar)
+)
+router.get('/verify/:verificationToken', wrapperError(verifyUser))
+router.post('/verify', wrapperError(repeatEmailForVerifyUser))
 
 export default router
