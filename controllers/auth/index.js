@@ -1,5 +1,6 @@
 import { httpCode } from '../../lib/constants.js'
 import authService from '../../service/auth/index.js'
+import { EmailService, SendgridSender } from '../../service/email/index.js'
 
 const { OK, CREATED, CONFLICT, UNAUTHORIZED, NO_CONTENT } = httpCode
 
@@ -9,13 +10,26 @@ export const signupController = async (req, res, next) => {
     const isUserExist = await authService.isUserExist(email)
 
     if (isUserExist) {
-      res
+      return res
         .status(CONFLICT)
         .json({ status: 'error', code: CONFLICT, message: 'Email in use' })
-    } else {
-      const data = await authService.createUser(req.body)
-      res.status(CREATED).json({ status: 'success', code: CREATED, data })
     }
+    const userData = await authService.createUser(req.body)
+    const emailService = new EmailService(
+      process.env.NODE_ENV,
+      new SendgridSender()
+    )
+    const isSendEmail = await emailService.sendVerifyEmail(
+      email,
+      userData.name,
+      userData.verificationToken
+    )
+    delete userData.verificationToken
+    res.status(CREATED).json({
+      status: 'success',
+      code: CREATED,
+      data: { ...userData, isSendEmailVerify: isSendEmail },
+    })
   } catch (err) {
     next(err)
   }
