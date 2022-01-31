@@ -31,9 +31,11 @@ app.use((req, res) => {
 })
 
 app.use((err, req, res, next) => {
+  const statusCode = err.status || INTERNAL_SERVER_ERROR
+  const status = statusCode === INTERNAL_SERVER_ERROR ? 'fail' : 'error'
   res
-    .status(INTERNAL_SERVER_ERROR)
-    .json({ status: 'fail', code: INTERNAL_SERVER_ERROR, message: err.message })
+    .status(statusCode)
+    .json({ status, code: statusCode, message: err.message })
 })
 
 export default app
